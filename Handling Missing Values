@@ -60,10 +60,28 @@ df.na.drop(subset = 'class').show()        ## class cloumns se null vlaue delete
 | 4  | David   | 40   | Paris    | null   |
 | 5  | null    | null | null     | null   |
 
-**Age is missing for Bob and Charlie.
+Age is missing for Bob and Charlie.
 City is missing for Alice.
 Salary is missing for Alice, Bob, and David.
-Name is missing for record 5.**
+Name is missing for record 5
+
+Solution:;
+
+Example 1: Fill all columns with a default value
+
+df.fillna({'Name': 'Unknown', 'Age': 0, 'City': 'Unknown', 'Salary': 0}).show()
+
+| ID | Name    | Age | City     | Salary |
+| -- | ------- | --- | -------- | ------ |
+| 1  | Alice   | 25  | Unknown  | 45000  |
+| 2  | Bob     | 0   | New York | 0      |
+| 3  | Charlie | 0   | London   | 60000  |
+| 4  | David   | 40  | Paris    | 0      |
+| 5  | Unknown | 0   | Unknown  | 0      |
+
+
+
+
 
 
 
