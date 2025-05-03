@@ -1,0 +1,67 @@
+## 
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, sum as _sum, count, when
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("StudentPerformance").getOrCreate()
+
+# Sample data for students
+data_students = [
+    (1, "Alice"),
+    (2, "Bob"),
+    (3, "Charlie"),
+    (4, "David")
+]
+columns_students = ["ID", "Name"]
+df_students = spark.createDataFrame(data_students, columns_students)
+
+# Sample data for marks
+data_marks = [
+    (1, "Math", 85),
+    (1, "Science", 78),
+    (2, "Math", 65),
+    (2, "Science", 70),
+    (3, "Math", 45),
+    (3, "Science", 50),
+    (4, "Math", 35),
+    (4, "Science", 40)
+]
+columns_marks = ["ID", "Subject", "Mark"]
+df_marks = spark.createDataFrame(data_marks, columns_marks)
+
+
+## Join DataFrames on 'ID'Join DataFrames on 'ID'
+
+df_joined = df_students.join(df_marks, on="ID")
+
+## Calculate Percentage for Each Student
+
+df_percentage = df_joined.groupBy("ID", "Name").agg(
+    (_sum("Mark") / count("Subject")).alias("Percentage"))
+
+## Assign Result Based on Percentage
+
+df_result = df_percentage.withColumn(
+    "Result",
+    when(col("Percentage") >= 70, "Distinction")
+    .when((col("Percentage") >= 60) & (col("Percentage") < 70), "First Class")
+    .when((col("Percentage") >= 50) & (col("Percentage") < 60), "Second Class")
+    .when((col("Percentage") >= 40) & (col("Percentage") < 50), "Third Class")
+    .otherwise("Fail")
+)
+
+
+
+
+OUTPUT:
++---+-------+----------+
+| ID|   Name|Percentage|
++---+-------+----------+
+|  1|  Alice|      81.5|
+|  2|    Bob|      67.5|
+|  3|Charlie|      47.5|
+|  4|  David|      37.5|
++---+-------+----------+
+
+
