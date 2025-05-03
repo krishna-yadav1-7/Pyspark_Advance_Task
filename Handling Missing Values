@@ -1,0 +1,76 @@
+from pyspark.sql import SparkSession
+
+ss = SparkSession.builder().appName("Missing@values").getOrCreate()
+df = ss.read.csv('/path/loacation')
+df.show()
+
+df.columns         #this will show us name of all columns
+                      # columns_name are [_c0,_c1,_c2,_c3,_c4]
+
+#Renaming the name of existing columns.
+
+df = iris.withColumnRenamed('_c0','sepal_lenght')\
+           .withColumnRenamed('_c1','sepal_width')\
+           .withColumnRenamed('_c2','petal_lenght')\
+           .withColumnRenamed('_c3','petal_width')\
+           .withColumnRenamed('_c4','class')\
+
+df.printSchema()
+
+df.na.drop(thresh=3)         # wo records delete ho jayenge jinke pass min to min 2 non null values hongi
+                             # non null value = 3 rhegi to usko kuch nhi krenge , wahi par jakar ruk jayenge, uske niche delete ho jayenge
+
+# Examples 
+
++---+-----+----+------+------+
+| ID| Name| Age|  City|Salary|
++---+-----+----+------+------+
+|  1|Alice|  25|  null|  null|   # 3 non-null
+|  2|  Bob|null|  null| 40000|   # 3 non-null
+|  3| null|null|London|  null|   # 2 non-null
+|  4|David|  40| Paris|  null|   # 4 non-null
+|  5| null|null|  null|  null|   # 1 non-null
++---+-----+----+------+------+
+
+df.na.drop(thresh=3)
+
++---+-----+----+------+------+
+| ID| Name| Age|  City|Salary|
++---+-----+----+------+------+
+|  1|Alice|  25|  null|  null|   # 3 non-null → KEEP
+|  2|  Bob|null|  null| 40000|   # 3 non-null → KEEP
+|  4|David|  40| Paris|  null|   # 4 non-null → KEEP
++---+-----+----+------+------+
+
+
+-------------------------------------------------------------------------------------
+## If we want to remove null vlaue from particular columns
+
+df.na.drop(subset = 'class').show()        ## class cloumns se null vlaue delete ho jayengi
+
+-----------------------------------------------------------------------------------------------------
+## Handling null value in real time 
+
+
+| ID | Name    | Age  | City     | Salary |
+| -- | ------- | ---- | -------- | ------ |
+| 1  | Alice   | 25   | null     | 45000  |
+| 2  | Bob     | null | New York | null   |
+| 3  | Charlie | null | London   | 60000  |
+| 4  | David   | 40   | Paris    | null   |
+| 5  | null    | null | null     | null   |
+
+**Age is missing for Bob and Charlie.
+City is missing for Alice.
+Salary is missing for Alice, Bob, and David.
+Name is missing for record 5.**
+
+
+
+
+
+
+
+
+
+
