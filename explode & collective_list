@@ -1,0 +1,22 @@
+| Student_ID | Name    | Courses                           |
+| ----------- | ------- | --------------------------------- |
+| 1           | Alice   | ["Math", "Physics", "Chemistry"] |
+| 2           | Bob     | ["Biology", "Math"]              |
+| 3           | Charlie | ["Computer Science"]             |
+| 4           | David   | []                               |
+| 5           | Emma    | ["Math", "Chemistry"]            |
+
+df_explode = df.withColumn("Course", explode(df.Courses))
+
+
+| Student_ID | Name    | Course            |
+| ----------- | ------- | ---------------- |
+| 1           | Alice   | Math             |
+| 1           | Alice   | Physics          |
+| 1           | Alice   | Chemistry        |
+| 2           | Bob     | Biology          |
+| 2           | Bob     | Math             |
+| 3           | Charlie | Computer Science |
+| 4           | David   | null             |
+| 5           | Emma    | Math             |
+| 5           | Emma    | Chemistry        |
