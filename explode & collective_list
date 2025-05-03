@@ -1,3 +1,34 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import split, explode
+
+# Initialize SparkSession
+spark = SparkSession.builder.appName("split-explode-example").getOrCreate()
+
+# Sample data
+
+data = [
+    (1, "Alice", "Math,Physics,Chemistry"),
+    (2, "Bob", "Biology,Math"),
+    (3, "Charlie", "Computer Science"),
+    (4, "David", ""),  # Empty string
+    (5, "Emma", "Math,Chemistry")
+]
+
+# Create DataFrame
+df = spark.createDataFrame(data, ["Student_ID", "Name", "Courses"])
+
+# Step 1: Split the "Courses" string into an array
+df_split = df.withColumn("Courses_Array", split(df.Courses, ","))
+
+# Step 2: Explode the array into multiple rows
+df_exploded = df_split.withColumn("Course", explode(df_split.Courses_Array))
+
+# Show the result
+df_exploded.select("Student_ID", "Name", "Course").show(truncate=False)
+
+
+
+
 | Student_ID | Name    | Courses                           |
 | ----------- | ------- | --------------------------------- |
 | 1           | Alice   | ["Math", "Physics", "Chemistry"] |
