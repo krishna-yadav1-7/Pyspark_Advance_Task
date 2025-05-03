@@ -1,0 +1,42 @@
+## Input
+
+data = [('Goa', ' ' ,'AP'), (' ' ,'AP','None'), ('None', '  ' ,'bglr')]
+columns = ["city1", "city2", "city3"]
+
+df = spark.createDataFrame(data, columns)
+display(df)
+
+Input data:
++-----+-----+-----+
+|city1|city2|city3|
++-----+-----+-----+
+|Goa  |     |AP   |
+|     |AP   |None |
+|None |     |bglr |
++-----+-----+-----+
+
+
+Solution:
+
+from pyspark.sql.functions import coalesce, when, col
+
+df1 = df.withColumn(
+    "firstnotnull",
+    coalesce(
+        when((col("city1").rlike("^\\s*$")) | (col("city1") == "None"), None).otherwise(col("city1")),
+        when((col("city2").rlike("^\\s*$")) | (col("city2") == "None"), None).otherwise(col("city2")),
+        when((col("city3").rlike("^\\s*$")) | (col("city3") == "None"), None).otherwise(col("city3"))
+    ))
+df1.show(truncate=False)
+
+
+OUTPUT:
++-----+-----+-----+-------------+
+|city1|city2|city3|firstnotnull |
++-----+-----+-----+-------------+
+|Goa  |     |AP   |Goa          |
+|     |AP   |None |AP           |
+|None |     |bglr |bglr         |
++-----+-----+-----+-------------+
+
+
